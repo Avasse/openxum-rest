@@ -1,0 +1,24 @@
+{
+  "name": "openxum-rest",
+  "version": "1.0.0",
+  "description": "REST API of OpenXum",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node app.js"
+  },
+  "author": "Eric RAMAT",
+  "license": "GPL-3.0",
+  "dependencies": {
+    "async": "^2.1.5",
+    "bcrypt": "^0.8.5",
+    "express": "~4.9.0",
+    "connect-mongo": "~0.4.1",
+    "compression": "~1.0.2",
+    "body-parser": "~1.8.1",
+    "formidable": "~1.1.1",
+    "jwt-simple": "^0.4.1",
+    "mongoose": "~4.8.3",
+    "moment": "~2.8.3"
+  }
+}
