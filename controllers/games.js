@@ -8,8 +8,8 @@ exports = module.exports = function (app) {
     getOfflineGames: function (req, res) {
       req.app.db.models.Game.find({
           type: 'offline', status: 'run', $or: [
-            {'userCreated.id': req.idUser},
-            {'opponent.id': req.idUser}
+            {'userCreated.id': req.params.idUser},
+            {'opponent.id': req.params.idUser}
           ]
         }, null,
         function (err, games) {
@@ -27,7 +27,7 @@ exports = module.exports = function (app) {
                       if (game.opponent !== null) {
                         req.app.db.models.User.findOne({_id: game.opponent.id}, null,
                           {safe: true}, function (err, opponent) {
-                            var isGameOwner = game.userCreated.id.toString() === req.idUser;
+                            var isGameOwner = game.userCreated.id.toString() === req.params.idUser;
                             if (opponent) {
                               game.opponent.name = opponent.username;
                             }
@@ -40,7 +40,7 @@ exports = module.exports = function (app) {
                             if (gamesdetail.length === games.length) {
                               if (notdone) {
                                 res.status(200).json({
-                                  user_id: req.idUser,
+                                  user_id: req.params.idUser,
                                   my_offline_games: gamesdetail
                                 });
                                 notdone = false;
@@ -53,11 +53,58 @@ exports = module.exports = function (app) {
             });
           } else {
             res.status(200).json({
-              user_id: req.idUser,
+              user_id: req.params.idUser,
               my_offline_games: []
             });
           }
         });
+    },
+
+    // Return all games
+    getAllGames: function (req, res) {
+      req.app.db.models.GameType.findOne({name: req.params.gameType}, null, {safe: true}, function (err, gameType) {
+        req.app.db.models.Game.find({game: gameType._id, type: 'online', 'userCreated.id': req.params.idUser}, null,
+          {safe: true}, function (err, games) {
+            var my_online_games = games ? games : [];
+
+            req.app.db.models.Game.find({
+                game: gameType._id,
+                type: 'offline',
+                status: 'wait',
+                'userCreated.id': req.params.idUser
+              }, null,
+              {safe: true}, function (err, games) {
+                var my_offline_games = games ? games : [];
+
+                req.app.db.models.Game.find({
+                    game: gameType._id,
+                    type: 'online',
+                    'userCreated.id': {'$ne': req.params.idUser}
+                  }, 'name color mode userCreated.name',
+                  {safe: true}, function (err, games) {
+                    var other_online_games = games ? games : [];
+
+                    req.app.db.models.Game.find({
+                        game: gameType._id,
+                        type: 'offline',
+                        status: 'wait',
+                        'userCreated.id': {'$ne': req.params.idUser}
+                      }, 'name color mode userCreated.name userCreated.id',
+                      {safe: true}, function (err, games) {
+                        var other_offline_games = games ? games : [];
+                        res.status(200).json({
+                          game: req.params.gameType,
+                          user_id: req.params.idUser,
+                          my_online_games: my_online_games,
+                          my_offline_games: my_offline_games,
+                          other_online_games: other_online_games,
+                          other_offline_games: other_offline_games
+                        });
+                      });
+                  });
+              });
+          });
+      });
     }
   };
 

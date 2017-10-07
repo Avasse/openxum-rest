@@ -19,6 +19,7 @@ exports = module.exports = function (app) {
    */
 
   router.get('/api/game/offline/:idUser', game.getOfflineGames);
+  router.get('/api/game/all/:idUser/:gameType', game.getAllGames);
 
   return router;
 };
