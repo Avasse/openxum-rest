@@ -17,8 +17,8 @@ module.exports = function (req, res, next) {
       }
 
       // Authorize the user to see if s/he can access our resources
-
       if ((req.url.indexOf('admin') >= 0 && decoded.roles[0].roleName == 'admin') || (req.url.indexOf('admin') < 0 && req.url.indexOf('/api/') >= 0)) {
+        req.user = decoded;
         next(); // To move to next middleware
       }
       else {

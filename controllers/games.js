@@ -4,6 +4,35 @@ exports = module.exports = function (app) {
 
   var games = {
 
+    // Create offline game
+    createOfflineGame: function (req, res) {
+      req.app.db.models.GameType.findOne({name: req.params.gameType}, null,
+        {safe: true}, function (err, gametype) {
+          req.app.db.models.Game.findOne({name: req.params.name}, null,
+            {safe: true}, function (err, game) {
+              if (!game) {
+                var fieldsToSet = {
+                  name: req.params.name,
+                  game: gametype._id,
+                  color: req.params.color,
+                  mode: req.params.mode,
+                  type: 'offline',
+                  status: 'wait',
+                  userCreated: {
+                    id: req.user.id,
+                    name: req.user.username
+                  },
+                  opponent: {id: null},
+                  currentColor: req.params.color
+                };
+                req.app.db.models.Game.create(fieldsToSet, function (err, user) {
+                  res.status(200).json({});
+                });
+              }
+            });
+        });
+    },
+
     // Return offline games
     getOfflineGames: function (req, res) {
       req.app.db.models.Game.find({
