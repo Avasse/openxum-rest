@@ -1,6 +1,7 @@
 exports = module.exports = function (app) {
   var express = require('express');
   var router = express.Router();
+  const { check, validationResult } = require('express-validator/check');
 
   var auth = require('./auth.js')(app);
   var user = require('./../controllers/users.js')(app);
@@ -10,6 +11,12 @@ exports = module.exports = function (app) {
    * Routes that can be accessed by any one
    */
   router.post('/login', auth.login);
+
+  router.post('/register', [
+    check('email').isEmail(),
+    check('username').isLength({ min: 3 }),
+    check('password').isLength({ min: 4 })
+  ], auth.signUp)
 
   router.get('/api/user/:id/preferences', user.getUserPreferences);
   router.put('/api/user/:id/preferences', user.updateUserPreferences);

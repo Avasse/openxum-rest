@@ -3,6 +3,7 @@
 var jwt = require('jwt-simple');
 var bCrypt = require('bcrypt');
 var fs = require('fs');
+const { check, validationResult } = require('express-validator/check');
 
 exports = module.exports = function (app) {
   var auth = {
@@ -42,6 +43,51 @@ exports = module.exports = function (app) {
         }
       });
     },
+
+    signUp: (req, res) => {
+      var username = req.body.username || '';
+      var password = req.body.password || '';
+      var email = req.body.email || '';
+
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        return res.status(401).json({ errors: errors.array() });
+      }
+
+      var dbNewUser = new app.db.models.User({
+        username: username,
+        password: password,
+        email: email,
+        isActive: true
+      });
+
+      var promise = dbNewUser.save((err, user) => {
+        if (err) {
+          return res.status(401).json({
+            "status": 401,
+            "message": "Error while creating new user"
+          });
+        } else {
+          var dbUserObj = auth.validate(user.username, user.password, (err, dbUserObj) => {
+            if (!dbUserObj) {
+              return res.status(401).json({
+                "status": 401,
+                "message": err
+              });
+            }
+            if (dbUserObj) {
+              var expires = expiresIn(7); // 7 days
+              return res.status(200).json({
+                'token': genToken(dbUserObj, expires),
+                'expire': expires,
+                'user': dbUserObj
+              });
+            }
+          })
+        }
+      })
+    },
+
     validate: function (username, password, callback) {
       var getRoleName = function (roles, roleId) {
         var i = 0;

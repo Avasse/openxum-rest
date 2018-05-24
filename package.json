@@ -12,13 +12,14 @@
   "dependencies": {
     "async": "^2.1.5",
     "bcrypt": "^0.8.5",
-    "express": "~4.9.0",
-    "connect-mongo": "~0.4.1",
-    "compression": "~1.0.2",
     "body-parser": "~1.8.1",
+    "compression": "~1.0.2",
+    "connect-mongo": "~0.4.1",
+    "express": "~4.9.0",
+    "express-validator": "^5.2.0",
     "formidable": "~1.1.1",
     "jwt-simple": "^0.4.1",
-    "mongoose": "~4.8.3",
-    "moment": "~2.8.3"
+    "moment": "~2.8.3",
+    "mongoose": "~4.8.3"
   }
 }

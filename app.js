@@ -12,6 +12,10 @@ app.config = config;
 // moment
 app.moment = moment;
 
+// configure the app to use bodyParser()
+app.use(bodyParser.urlencoded({
+  extended: true
+}));
 app.use(bodyParser.json());
 
 //setup mongoose
