@@ -18,6 +18,13 @@ exports = module.exports = function (app) {
     check('password').isLength({ min: 4 })
   ], auth.signUp)
 
+  router.post('/update/:id', [
+    check('id').isLength({ min: 1 }),
+    check('email').isEmail(),
+    check('username').isLength({ min: 3 }),
+    check('password').isLength({ min: 4 })
+  ], auth.updateUser)
+
   router.get('/api/user/:id/preferences', user.getUserPreferences);
   router.put('/api/user/:id/preferences', user.updateUserPreferences);
 
